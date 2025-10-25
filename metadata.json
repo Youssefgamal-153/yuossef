@@ -1,0 +1,7 @@
+{
+  "name": "Copy of YG Create Images",
+  "description": "A next-generation AI image creation platform. Write a prompt in English or Arabic, choose a style and size, and generate high-resolution, stylistically accurate images instantly.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YG - AI Image Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --glow-color-1: #00c6ff;
+        --glow-color-2: #e01e84;
+        --glow-color-3: #ffab1d;
+        --glow-color-ar: #ffab1d; /* Gold for Arabic hover */
+      }
+
+      /* Base styles and animated background */
+      html, body, #root {
+        height: 100%;
+      }
+      
+      body {
+        background: linear-gradient(-45deg, #0a0316, #1a0a3a, #1a1a2e, #3a1d5c);
+        background-size: 400% 400%;
+        animation: gradientBG 20s ease infinite;
+        color: #e0e0e0;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      #root {
+        flex: 1;
+      }
+      
+      [dir="ltr"] body { font-family: 'Poppins', sans-serif; }
+      [dir="rtl"] body { font-family: 'Cairo', sans-serif; }
+
+      @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      /* Glassmorphism effect */
+      .glassmorphism {
+        background: rgba(20, 15, 40, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1.25rem; /* 20px */
+      }
+      
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+      ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in-up { 
+        animation: fadeInUp 0.6s ease-out forwards;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.8s ease-out forwards;
+      }
+      
+      @keyframes shimmer {
+        0% { background-position: -500px 0; }
+        100% { background-position: 500px 0; }
+      }
+
+      @keyframes success-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(76, 201, 76, 0.7); }
+        70% { box-shadow: 0 0 8px 10px rgba(76, 201, 76, 0), 0 0 16px var(--glow-color-1), 0 0 24px var(--glow-color-2); }
+        100% { box-shadow: 0 0 0 0 rgba(76, 201, 76, 0); }
+      }
+      .animate-success-pulse {
+        animation: success-pulse 1s ease-out;
+      }
+      
+      /* Interactive Elements */
+      .glow-on-hover {
+        transition: box-shadow 0.3s ease-in-out, transform 0.2s ease;
+      }
+      .glow-on-hover:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 0 8px var(--glow-color-1), 0 0 16px var(--glow-color-1), 0 0 24px var(--glow-color-2);
+      }
+      .glow-on-hover:active:not(:disabled) {
+        transform: translateY(0);
+      }
+      
+      /* Custom Input/Select Styles */
+      .custom-input {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 0.5rem;
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+      .custom-input:focus {
+        outline: none;
+        border-color: var(--glow-color-1);
+        box-shadow: 0 0 8px rgba(0, 198, 255, 0.5);
+      }
+      
+      /* Pixar Mode Toggle */
+      .pixar-toggle {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+      }
+      .pixar-toggle input { display: none; }
+      .pixar-toggle .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #333;
+        transition: .4s;
+        border-radius: 34px;
+      }
+      .pixar-toggle .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px; width: 26px;
+        left: 4px; bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+      }
+      .pixar-toggle input:checked + .slider {
+        background: linear-gradient(90deg, var(--glow-color-3), var(--glow-color-1));
+        box-shadow: 0 0 15px var(--glow-color-3);
+      }
+      .pixar-toggle input:checked + .slider:before {
+        transform: translateX(26px);
+      }
+
+      /* Language Toggle Button */
+      .lang-toggle-button {
+        transition: box-shadow 0.3s ease-in-out, transform 0.2s ease, background-color 0.3s;
+      }
+      .lang-toggle-button:hover {
+        transform: translateY(-2px);
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      [dir="ltr"] .lang-toggle-button:hover {
+        box-shadow: 0 0 8px var(--glow-color-1), 0 0 12px var(--glow-color-1);
+      }
+      [dir="rtl"] .lang-toggle-button:hover {
+        box-shadow: 0 0 8px var(--glow-color-ar), 0 0 12px var(--glow-color-ar);
+      }
+
+      /* Mic button */
+      .mic-button {
+        position: absolute;
+        bottom: 12px;
+        right: 12px; /* LTR */
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s, box-shadow 0.3s;
+        border: 1px solid transparent;
+      }
+      [dir="rtl"] .mic-button {
+        right: auto;
+        left: 12px;
+      }
+      .mic-button:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      @keyframes pulse-mic {
+        0% { box-shadow: 0 0 0 0 rgba(0, 198, 255, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(0, 198, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 198, 255, 0); }
+      }
+      .mic-recording {
+        animation: pulse-mic 2s infinite;
+        background-color: rgba(0, 198, 255, 0.2);
+        border-color: var(--glow-color-1);
+      }
+
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.25.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+</head>
+<body class="antialiased">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
